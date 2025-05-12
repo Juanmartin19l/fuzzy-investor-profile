@@ -4,9 +4,9 @@ FUNCTION_BLOCK perfil_inversionista
 // Define input variables
 VAR_INPUT
     edad : REAL;               // Edad en años
+    horizonte_inversion : REAL; // Horizonte de inversión en años
     ingresos_mensuales : REAL; // Ingresos mensuales en dólares
     tolerancia_riesgo : REAL;  // Valor subjetivo del 0 al 10
-    horizonte_inversion : REAL; // Horizonte de inversión en años
 END_VAR
 
 // Define output variable
@@ -19,6 +19,13 @@ FUZZIFY edad
     TERM joven := (18, 1) (30, 1) (45, 0);
     TERM medio := (35, 0) (45, 1) (65, 1) (75, 0);
     TERM mayor := (65, 0) (75, 1) (100, 1);
+END_FUZZIFY
+
+// Fuzzificación de la variable horizonte_inversion
+FUZZIFY horizonte_inversion
+    TERM corto := (0, 1) (2, 1) (5, 0);
+    TERM medio := (3, 0) (5, 1) (10, 0);
+    TERM largo := (8, 0) (15, 1) (30, 1);
 END_FUZZIFY
 
 // Fuzzificación de la variable ingresos_mensuales
@@ -35,12 +42,6 @@ FUZZIFY tolerancia_riesgo
     TERM alta := (6, 0) (8, 1) (10, 1);
 END_FUZZIFY
 
-// Fuzzificación de la variable horizonte_inversion
-FUZZIFY horizonte_inversion
-    TERM corto := (0, 1) (2, 1) (5, 0);
-    TERM medio := (3, 0) (5, 1) (10, 0);
-    TERM largo := (8, 0) (15, 1) (50, 1);
-END_FUZZIFY
 
 // Defuzzificación del perfil de inversión
 DEFUZZIFY perfil_inversionista

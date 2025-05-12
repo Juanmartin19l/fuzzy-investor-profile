@@ -6,28 +6,33 @@ Este proyecto implementa un sistema de lógica difusa para clasificar perfiles d
 
 El sistema clasifica a los inversionistas utilizando lógica difusa a partir de:
 
-### Variables de Entrada:
+### Variables de Entrada (en orden de parámetros para la ejecución):
+
 1. **Edad** (en años)
+
    - Joven: 18-45 años
    - Medio: 35-75 años
    - Mayor: 65-100 años
 
-2. **Ingresos Mensuales** (en dólares)
+2. **Horizonte de Inversión** (en años)
+
+   - Corto: 0-5 años
+   - Medio: 3-10 años
+   - Largo: 8-30 años
+
+3. **Ingresos Mensuales** (en dólares)
+
    - Bajos: 0-4,000 dólares
    - Medios: 3,000-10,000 dólares
-   - Altos: 8,000+ dólares
+   - Altos: 8,000-100,000 dólares
 
-3. **Tolerancia al Riesgo** (escala subjetiva 0-10)
+4. **Tolerancia al Riesgo** (escala subjetiva 0-10)
    - Baja: 0-4
    - Media: 3-7
    - Alta: 6-10
 
-4. **Horizonte de Inversión** (en años)
-   - Corto: 0-5 años
-   - Medio: 3-10 años
-   - Largo: 8-50 años
-
 ### Variable de Salida:
+
 - **Perfil del Inversionista** (escala 0-10)
   - Conservador: 0-4
   - Moderado: 3-7
@@ -36,6 +41,7 @@ El sistema clasifica a los inversionistas utilizando lógica difusa a partir de:
 ## Lógica de Inferencia
 
 El sistema utiliza operadores AND anidados para combinar las variables:
+
 1. Primero combina (edad AND ingresos_mensuales)
 2. Luego combina (tolerancia_riesgo AND horizonte_inversion)
 3. Finalmente aplica una AND entre estos dos resultados para determinar el perfil final
@@ -50,35 +56,44 @@ El sistema utiliza operadores AND anidados para combinar las variables:
 Para ejecutar el sistema desde la línea de comandos:
 
 ```bash
-java -jar jFuzzyLogic.jar -e perfil_inversionista.fcl <edad> <ingresos_mensuales> <tolerancia_riesgo> <horizonte_inversion>
+java -jar jFuzzyLogic.jar -e perfil_inversionista.fcl <edad> <horizonte_inversion> <ingresos_mensuales> <tolerancia_riesgo>
 ```
 
 ### Ejemplos:
 
 1. **Perfil conservador:**
+
 ```bash
-java -jar jFuzzyLogic.jar -e perfil_inversionista.fcl 70 1500 2 3
+java -jar jFuzzyLogic.jar -e perfil_inversionista.fcl 70 3 1500 2
 ```
+
 (Persona mayor con bajos ingresos, baja tolerancia al riesgo y horizonte corto)
 
 2. **Perfil moderado:**
+
 ```bash
-java -jar jFuzzyLogic.jar -e perfil_inversionista.fcl 50 6000 5 7
+java -jar jFuzzyLogic.jar -e perfil_inversionista.fcl 50 7 6000 5
 ```
+
 (Persona de edad media con ingresos medios, tolerancia media y horizonte medio)
 
 3. **Perfil arriesgado:**
+
 ```bash
-java -jar jFuzzyLogic.jar -e perfil_inversionista.fcl 25 12000 9 20
+java -jar jFuzzyLogic.jar -e perfil_inversionista.fcl 25 20 12000 9
 ```
+
 (Persona joven con altos ingresos, alta tolerancia al riesgo y horizonte largo)
 
 ## Interpretación de Resultados
 
 Al ejecutar el sistema, se mostrará la evaluación del perfil del inversionista en una escala de 0 a 10:
+
 - Valores cercanos a 0-3: Perfil más conservador
 - Valores cercanos a 4-6: Perfil moderado
 - Valores cercanos a 7-10: Perfil más arriesgado
+
+Además, el sistema mostrará las reglas que se han activado y su nivel de soporte (Support). Un valor de 1.0 indica activación completa de la regla. El valor de la variable de salida `perfil_inversionista` es el que determina el perfil final.
 
 ## Archivos del Proyecto
 
@@ -89,6 +104,7 @@ Al ejecutar el sistema, se mostrará la evaluación del perfil del inversionista
 ## Extensión del Sistema
 
 El sistema actual contiene reglas básicas para empezar. Para una clasificación más precisa, se recomienda:
+
 - Agregar más reglas difusas para cubrir más casos
 - Ajustar las funciones de membresía según datos reales
 - Considerar variables adicionales (como situación familiar, deudas actuales, etc.)
