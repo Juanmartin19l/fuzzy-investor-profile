@@ -1,0 +1,48 @@
+FUNCTION_BLOCK perfil_inversor
+
+VAR_INPUT
+    potencial : REAL;
+    riesgo : REAL;
+END_VAR
+
+VAR_OUTPUT
+    perfil_inversor : REAL;
+END_VAR
+
+FUZZIFY potencial
+    TERM bajo := (0,1) (4,0);
+    TERM medio := (3,0) (5,1) (8,0);
+    TERM alto := (7,0) (10,1);
+END_FUZZIFY
+
+FUZZIFY riesgo
+    TERM bajo := (0,1) (4,0);
+    TERM medio := (3,0) (5,1) (8,0);
+    TERM alto := (7,0) (10,1);
+END_FUZZIFY
+
+DEFUZZIFY perfil_inversor
+    TERM conservador := (0,1) (1,0);
+    TERM moderado := (0.5,0) (1.5,1) (2.5,0);
+    TERM agresivo := (2,0) (3,1);
+    METHOD : COG;
+    DEFAULT := 0;
+END_DEFUZZIFY
+
+RULEBLOCK reglas_finales
+    AND : MIN;
+    ACT : MIN;
+    ACCU : MAX;
+
+    RULE 19 : IF potencial IS bajo AND riesgo IS bajo THEN perfil_inversor IS conservador;
+    RULE 20 : IF potencial IS bajo AND riesgo IS medio THEN perfil_inversor IS conservador;
+    RULE 21 : IF potencial IS bajo AND riesgo IS alto THEN perfil_inversor IS conservador;
+    RULE 22 : IF potencial IS medio AND riesgo IS bajo THEN perfil_inversor IS moderado;
+    RULE 23 : IF potencial IS medio AND riesgo IS medio THEN perfil_inversor IS moderado;
+    RULE 24 : IF potencial IS medio AND riesgo IS alto THEN perfil_inversor IS agresivo;
+    RULE 25 : IF potencial IS alto AND riesgo IS bajo THEN perfil_inversor IS agresivo;
+    RULE 26 : IF potencial IS alto AND riesgo IS medio THEN perfil_inversor IS agresivo;
+    RULE 27 : IF potencial IS alto AND riesgo IS alto THEN perfil_inversor IS agresivo;
+END_RULEBLOCK
+
+END_FUNCTION_BLOCK
