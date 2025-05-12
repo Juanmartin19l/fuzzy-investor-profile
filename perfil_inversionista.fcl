@@ -1,0 +1,95 @@
+// Block definition
+FUNCTION_BLOCK perfil_inversionista
+
+// Define input variables
+VAR_INPUT
+    edad : REAL;               // Edad en años
+    ingresos_mensuales : REAL; // Ingresos mensuales en dólares
+    tolerancia_riesgo : REAL;  // Valor subjetivo del 0 al 10
+    horizonte_inversion : REAL; // Horizonte de inversión en años
+END_VAR
+
+// Define output variable
+VAR_OUTPUT
+    perfil_inversionista : REAL; // Perfil de inversión de 0 (conservador) a 10 (arriesgado)
+END_VAR
+
+// Fuzzificación de la variable edad
+FUZZIFY edad
+    TERM joven := (18, 1) (30, 1) (45, 0);
+    TERM medio := (35, 0) (45, 1) (65, 1) (75, 0);
+    TERM mayor := (65, 0) (75, 1) (100, 1);
+END_FUZZIFY
+
+// Fuzzificación de la variable ingresos_mensuales
+FUZZIFY ingresos_mensuales
+    TERM bajos := (0, 1) (2000, 1) (4000, 0);
+    TERM medios := (3000, 0) (5000, 1) (8000, 1) (10000, 0);
+    TERM altos := (8000, 0) (10000, 1) (100000, 1);
+END_FUZZIFY
+
+// Fuzzificación de la variable tolerancia_riesgo
+FUZZIFY tolerancia_riesgo
+    TERM baja := (0, 1) (2, 1) (4, 0);
+    TERM media := (3, 0) (5, 1) (7, 0);
+    TERM alta := (6, 0) (8, 1) (10, 1);
+END_FUZZIFY
+
+// Fuzzificación de la variable horizonte_inversion
+FUZZIFY horizonte_inversion
+    TERM corto := (0, 1) (2, 1) (5, 0);
+    TERM medio := (3, 0) (5, 1) (10, 0);
+    TERM largo := (8, 0) (15, 1) (50, 1);
+END_FUZZIFY
+
+// Defuzzificación del perfil de inversión
+DEFUZZIFY perfil_inversionista
+    TERM conservador := (0, 1) (2, 1) (4, 0);
+    TERM moderado := (3, 0) (5, 1) (7, 0);
+    TERM arriesgado := (6, 0) (8, 1) (10, 1);
+    
+    // Usar el método 'Center Of Gravity' para defuzzificación
+    METHOD : COG;
+    
+    // Valor por defecto es 0 (si ninguna regla activa el defuzzificador)
+    DEFAULT := 0;
+END_DEFUZZIFY
+
+// Definición de las reglas del sistema
+RULEBLOCK No1
+    // Usar 'min' para 'and' (también usa implícitamente 'max'
+    // para 'or' para cumplir con la Ley de DeMorgan)
+    AND : MIN;
+    
+    // Usar método de activación 'min'
+    ACT : MIN;
+    
+    // Usar método de acumulación 'max'
+    ACCU : MAX;
+
+    // Reglas para determinar el perfil de inversión
+    // Formato: Combina (edad AND ingresos) con (tolerancia AND horizonte)
+    
+    // Regla 1: Perfil conservador - Persona mayor con bajos ingresos y baja tolerancia al riesgo
+    RULE 1 : IF (edad IS mayor AND ingresos_mensuales IS bajos) AND 
+               (tolerancia_riesgo IS baja AND horizonte_inversion IS corto) 
+               THEN perfil_inversionista IS conservador;
+
+    // Regla 2: Perfil moderado - Persona de edad media con ingresos medios y tolerancia/horizonte medios
+    RULE 2 : IF (edad IS medio AND ingresos_mensuales IS medios) AND 
+               (tolerancia_riesgo IS media AND horizonte_inversion IS medio) 
+               THEN perfil_inversionista IS moderado;
+    
+    // Regla 3: Perfil arriesgado - Persona joven con altos ingresos y alta tolerancia al riesgo
+    RULE 3 : IF (edad IS joven AND ingresos_mensuales IS altos) AND 
+               (tolerancia_riesgo IS alta AND horizonte_inversion IS largo) 
+               THEN perfil_inversionista IS arriesgado;
+               
+    // Regla 4: Persona joven con bajos ingresos pero alta tolerancia y horizonte largo
+    RULE 4 : IF (edad IS joven AND ingresos_mensuales IS bajos) AND 
+               (tolerancia_riesgo IS alta AND horizonte_inversion IS largo) 
+               THEN perfil_inversionista IS moderado;
+               
+END_RULEBLOCK
+
+END_FUNCTION_BLOCK
