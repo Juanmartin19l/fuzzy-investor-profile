@@ -38,17 +38,17 @@ FUZZIFY tolerancia
 END_FUZZIFY
 
 DEFUZZIFY potencial
-    TERM bajo := (0, 1) (1, 0);
-    TERM medio := (0.5, 0) (1.5, 1) (2.5, 0);
-    TERM alto := (2, 0) (3, 1);
+    TERM bajo := (0, 1) (4, 0);
+    TERM medio := (3, 0) (5, 1) (8, 0);
+    TERM alto := (7, 0) (10, 1);
     METHOD : COG;
     DEFAULT := 0;
 END_DEFUZZIFY
 
 DEFUZZIFY riesgo
-    TERM bajo := (0, 1) (1, 0);
-    TERM medio := (0.5, 0) (1.5, 1) (2.5, 0);
-    TERM alto := (2, 0) (3, 1);
+    TERM bajo := (0, 1) (4, 0);
+    TERM medio := (3, 0) (5, 1) (8, 0);
+    TERM alto := (7, 0) (10, 1);
     METHOD : COG;
     DEFAULT := 0;
 END_DEFUZZIFY
@@ -62,7 +62,7 @@ DEFUZZIFY perfil_inversor
 END_DEFUZZIFY
 
 // Reglas para potencial
-RULEBLOCK reglas_demograficas
+RULEBLOCK potencial
     AND : MIN;
     ACT : MIN;
     ACCU : MAX;
@@ -79,14 +79,14 @@ RULEBLOCK reglas_demograficas
 END_RULEBLOCK
 
 // Reglas para riesgo
-RULEBLOCK reglas_financieras
+RULEBLOCK riesgo
     AND : MIN;
     ACT : MIN;
     ACCU : MAX;
 
     RULE 10 : IF conocimiento IS bajo AND tolerancia IS bajo THEN riesgo IS medio;
     RULE 11 : IF conocimiento IS bajo AND tolerancia IS medio THEN riesgo IS alto;
-    RULE 12 : IF conocimiento IS bajo AND tolerancia IS medio THEN riesgo IS alto;
+    RULE 12 : IF conocimiento IS bajo AND tolerancia IS alto THEN riesgo IS alto;
     RULE 13 : IF conocimiento IS medio AND tolerancia IS bajo THEN riesgo IS bajo;
     RULE 14 : IF conocimiento IS medio AND tolerancia IS medio THEN riesgo IS medio;
     RULE 15 : IF conocimiento IS medio AND tolerancia IS alto THEN riesgo IS alto;
