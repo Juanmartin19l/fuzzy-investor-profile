@@ -40,11 +40,19 @@ El sistema clasifica a los inversionistas utilizando lógica difusa a partir de:
 
 ## Lógica de Inferencia
 
-El sistema utiliza operadores AND anidados para combinar las variables:
+El sistema utiliza el operador AND para combinar las cuatro variables de entrada directamente, siguiendo este patrón:
 
-1. Primero combina (edad AND ingresos_mensuales)
-2. Luego combina (tolerancia_riesgo AND horizonte_inversion)
-3. Finalmente aplica una AND entre estos dos resultados para determinar el perfil final
+```
+IF edad IS ... AND ingresos_mensuales IS ... AND tolerancia_riesgo IS ... AND horizonte_inversion IS ... THEN perfil_inversionista IS ...
+```
+
+Las 24 reglas están organizadas por grupos según la edad:
+
+1. **Grupo 1**: Personas jóvenes (18-45 años) - Reglas 1-10
+2. **Grupo 2**: Personas de edad media (35-75 años) - Reglas 11-16
+3. **Grupo 3**: Personas mayores (65-100 años) - Reglas 17-24
+
+Dentro de cada grupo, las reglas se dividen en subgrupos según el nivel de ingresos (altos, medios, bajos) y luego según combinaciones de tolerancia al riesgo y horizonte de inversión.
 
 ## Requisitos
 
