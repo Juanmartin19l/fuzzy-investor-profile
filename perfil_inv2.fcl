@@ -1,0 +1,115 @@
+FUNCTION_BLOCK perfil_inversor
+
+VAR_INPUT
+    conocimiento : REAL;
+    edad : REAL;
+    ingresos : REAL;
+    tolerancia : REAL;
+END_VAR
+
+VAR_OUTPUT
+    potencial : REAL;
+    riesgo : REAL;
+    perfil_inversor : REAL;
+END_VAR
+
+FUZZIFY edad
+    TERM joven := (18, 1) (27, 1) (35, 0);
+    TERM adulto := (30, 0) (42, 1) (55, 0);
+    TERM mayor := (50, 0) (65, 1) (100, 1);
+END_FUZZIFY
+
+FUZZIFY ingresos
+    TERM bajo := (0, 1) (1000, 1) (2000, 0);
+    TERM medio := (1500, 0) (3000, 1) (4500, 0);
+    TERM alto := (4000, 0) (6000, 1) (15000, 1);
+END_FUZZIFY
+
+FUZZIFY conocimiento
+    TERM bajo := (0, 1) (2, 1) (4, 0);
+    TERM medio := (2, 0) (4, 1) (5, 1) (8, 0);
+    TERM alto := (6, 0) (8, 1) (10, 1);
+END_FUZZIFY
+
+FUZZIFY tolerancia
+    TERM bajo := (0, 1) (2, 1) (4, 0);
+    TERM medio := (2, 0) (4, 1) (5, 1) (8, 0);
+    TERM alto := (6, 0) (8, 1) (10, 1);
+END_FUZZIFY
+
+DEFUZZIFY potencial
+    TERM bajo := (0, 1) (1, 0);
+    TERM medio := (0.5, 0) (1.5, 1) (2.5, 0);
+    TERM alto := (2, 0) (3, 1);
+    METHOD : COG;
+    DEFAULT := 0;
+END_DEFUZZIFY
+
+DEFUZZIFY riesgo
+    TERM bajo := (0, 1) (1, 0);
+    TERM medio := (0.5, 0) (1.5, 1) (2.5, 0);
+    TERM alto := (2, 0) (3, 1);
+    METHOD : COG;
+    DEFAULT := 0;
+END_DEFUZZIFY
+
+DEFUZZIFY perfil_inversor
+    TERM conservador := (0, 1) (1, 0);
+    TERM moderado := (0.5, 0) (1.5, 1) (2.5, 0);
+    TERM agresivo := (2, 0) (3, 1);
+    METHOD : COG;
+    DEFAULT := 0;
+END_DEFUZZIFY
+
+// Reglas para potencial
+RULEBLOCK reglas_demograficas
+    AND : MIN;
+    ACT : MIN;
+    ACCU : MAX;
+
+    RULE 1 : IF edad IS joven AND ingresos IS bajo THEN potencial IS bajo;
+    RULE 2 : IF edad IS joven AND ingresos IS medio THEN potencial IS medio;
+    RULE 3 : IF edad IS joven AND ingresos IS alto THEN potencial IS alto;
+    RULE 4 : IF edad IS adulto AND ingresos IS bajo THEN potencial IS bajo;
+    RULE 5 : IF edad IS adulto AND ingresos IS medio THEN potencial IS medio;
+    RULE 6 : IF edad IS adulto AND ingresos IS alto THEN potencial IS alto;
+    RULE 7 : IF edad IS mayor AND ingresos IS bajo THEN potencial IS bajo;
+    RULE 8 : IF edad IS mayor AND ingresos IS medio THEN potencial IS bajo;
+    RULE 9 : IF edad IS mayor AND ingresos IS alto THEN potencial IS medio;
+END_RULEBLOCK
+
+// Reglas para riesgo
+RULEBLOCK reglas_financieras
+    AND : MIN;
+    ACT : MIN;
+    ACCU : MAX;
+
+    RULE 10 : IF conocimiento IS bajo AND tolerancia IS bajo THEN riesgo IS medio;
+    RULE 11 : IF conocimiento IS bajo AND tolerancia IS medio THEN riesgo IS alto;
+    RULE 12 : IF conocimiento IS bajo AND tolerancia IS medio THEN riesgo IS alto;
+    RULE 13 : IF conocimiento IS medio AND tolerancia IS bajo THEN riesgo IS bajo;
+    RULE 14 : IF conocimiento IS medio AND tolerancia IS medio THEN riesgo IS medio;
+    RULE 15 : IF conocimiento IS medio AND tolerancia IS alto THEN riesgo IS alto;
+    RULE 16 : IF conocimiento IS alto AND tolerancia IS bajo THEN riesgo IS bajo;
+    RULE 17 : IF conocimiento IS alto AND tolerancia IS medio THEN riesgo IS medio;
+    RULE 18 : IF conocimiento IS alto AND tolerancia IS alto THEN riesgo IS medio;
+END_RULEBLOCK
+
+// Reglas finales para perfil inversor
+RULEBLOCK reglas_finales
+    AND : MIN;
+    ACT : MIN;
+    ACCU : MAX;
+
+    RULE 19 : IF potencial IS bajo AND riesgo IS bajo THEN perfil_inversor IS conservador;
+    RULE 20 : IF potencial IS bajo AND riesgo IS medio THEN perfil_inversor IS conservador;
+    RULE 21 : IF potencial IS bajo AND riesgo IS alto THEN perfil_inversor IS conservador;
+    RULE 22 : IF potencial IS medio AND riesgo IS bajo THEN perfil_inversor IS moderado;
+    RULE 23 : IF potencial IS medio AND riesgo IS medio THEN perfil_inversor IS moderado;
+    RULE 24 : IF potencial IS medio AND riesgo IS alto THEN perfil_inversor IS agresivo;
+    RULE 25 : IF potencial IS alto AND riesgo IS bajo THEN perfil_inversor IS agresivo;
+    RULE 26 : IF potencial IS alto AND riesgo IS medio THEN perfil_inversor IS agresivo;
+    RULE 27 : IF potencial IS alto AND riesgo IS alto THEN perfil_inversor IS agresivo;
+END_RULEBLOCK
+
+END_FUNCTION_BLOCK
